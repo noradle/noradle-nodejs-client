@@ -3,13 +3,25 @@
  */
 "use strict";
 
+var now;
+function getNow(){
+  if (now) {
+    return now;
+  } else {
+    setInterval(function(){
+      now = Date.now();
+    }, 100);
+    return now = Date.now();
+  }
+};
+
+
 var util = require("util")
   , events = require("events")
   , reqCnt = 0
   , debug = require('debug')('noradle:steps')
   , writeFrame = require('noradle-protocol').frame.writeFrame
   , C = require('noradle-protocol').constant
-  , getNow = require('./util/util.js').getNow
   ;
 
 function split2nvs(lines){
