@@ -2,7 +2,7 @@
   "name": "noradle-nodejs-client",
   "version": "0.13.0",
   "description": "noradle protocol client to access oracle plsql servlet",
-  "main": "DBDriver.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
