@@ -1,0 +1,31 @@
+{
+  "name": "noradle-nodejs-client",
+  "version": "0.13.0",
+  "description": "noradle protocol client to access oracle plsql servlet",
+  "main": "DBDriver.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:noradle/noradle-nodejs-client.git"
+  },
+  "dependencies": {
+    "debug": "~2.1.1",
+    "noradle-protocol": "^0.13.0"
+  },
+  "keywords": [
+    "noradle",
+    "client",
+    "db",
+    "driver",
+    "db",
+    "pool"
+  ],
+  "author": "kaven276@vip.sina.com",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/noradle/noradle-nodejs-client/issues"
+  },
+  "homepage": "https://github.com/noradle/noradle-nodejs-client"
+}
