@@ -8,7 +8,7 @@ var frame = require('noradle-protocol').frame
   , debug = require('debug')('noradle:DBDriver')
   , Request = require('./Request.js').Request
   , C = require('noradle-protocol').constant
-  , net = require('net')
+  , http = require('http')
   ;
 
 
@@ -18,24 +18,29 @@ var frame = require('noradle-protocol').frame
  * @constructor
  * DBPool.freeList is only for slotIDs
  */
-function DBDriver(stream, auth){
+function DBDriver(){
   var me = this
     , release
     ;
-  this.stream = stream;
+  this.stream = null;
   this.concurrency = 0;
   this.freeSlots = []; // it is local slots, not global
   this.waitQueue = [];
   this.requests = [];
   this.quitting = false;
   this.execCount = 0;
+}
 
+DBDriver.prototype.bind = function(stream){
+  var me = this
+    ;
+  me.stream = stream;
   // accept/parse response from dispatcher
-  stream.on('connect', function(){
+  {
     debug('on connect to dispatcher');
     me.quitting = false;
     me._reset();
-    release && release();
+    me.release && me.release();
     // parse stream from dispatcher to frames, slotID is for local
     me.release = frame.parseFrameStream(stream, function onFrame(head, cSlotID, type, flag, len, body){
       debug('frame cSlotID(%d) type(%d)', cSlotID, type);
@@ -91,6 +96,7 @@ function DBDriver(stream, auth){
           }
       }
     });
+  }
 }
 
 DBDriver.prototype._cancelPendings = function(error){
@@ -175,18 +181,37 @@ DBDriver.prototype.execQueuedCB = function(){
 };
 
 DBDriver.connect = function(addr, auth){
-  var toDispatcherSocket = new net.Socket({allowHalfOpen : true})
-    , dbDriver = new DBDriver(toDispatcherSocket, auth)
-    , me = this
+  var dbDriver = new DBDriver()
     ;
+
+  var options = {
+    hostname : addr[1],
+    port : addr[0],
+    method : 'GET',
+    auth : auth.cid + ':' + auth.passwd,
+    headers : {
+      'noradle-role' : 'client',
+      upgrade : 'websocket'
+    }
+  };
 
   function connect(){
     debug('try connect to dispatcher');
-    toDispatcherSocket.removeAllListeners('readable');
-    toDispatcherSocket.connect.apply(toDispatcherSocket, addr);
+    http.request(options).on('upgrade', function(res, socket, head){
+      head.length && socket.unshift(head);
+      dbDriver.bind(socket);
+      dbDriver.listen2respawn(connect);
+    });
   }
 
   connect();
+}
+
+DBDriver.prototype.listen2respawn = function listen2respawn(connect){
+  var dbDriver = this
+    , me = this
+    , toDispatcherSocket = me.stream
+    ;
   toDispatcherSocket.on('end', function(){
     debug('socket end found!');
     dbDriver._reset();
