@@ -104,7 +104,7 @@ DBDriver.prototype._cancelPendings = function(error){
     if (req) {
       // may emulate a error frame
       debug('_cancelPendings cSlotID(%d)', cSlotID);
-      this.stream.emit('frame', null, cSlotID, C.ERROR_FRAME, 0, (new buffer(error)).length, error);
+      this.stream.emit('frame', null, cSlotID, C.ERROR_FRAME, 0, (new Buffer(error)).length, error);
       this.stream.emit('frame', null, cSlotID, C.END_FRAME, 0, 0, null);
     }
   }
