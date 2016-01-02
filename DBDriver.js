@@ -37,7 +37,7 @@ function DBDriver(stream, auth){
     me._reset();
     release && release();
     // parse stream from dispatcher to frames, slotID is for local
-    release = frame.wrapFrameStream(stream, C.CLIENT, C.DISPATCHER, function onFrame(head, cSlotID, type, flag, len, body){
+    me.release = frame.parseFrameStream(stream, function onFrame(head, cSlotID, type, flag, len, body){
       debug('frame cSlotID(%d) type(%d)', cSlotID, type);
       if (cSlotID) {
         if (type === C.ERROR_FRAME) {
@@ -91,11 +91,6 @@ function DBDriver(stream, auth){
           }
       }
     });
-    // write first authenticate frame
-    frame.writeFrame(stream, 0, C.AUTH_DATA, 0, new Buffer(JSON.stringify(auth)));
-  });
-
-
 }
 
 DBDriver.prototype._cancelPendings = function(error){
