@@ -190,7 +190,7 @@ DBDriver.connect = function(addr, auth){
     method : 'GET',
     auth : auth.cid + ':' + auth.passwd,
     headers : {
-      'noradle-role' : 'client',
+      'x-noradle-role' : 'client',
       upgrade : 'websocket'
     }
   };
