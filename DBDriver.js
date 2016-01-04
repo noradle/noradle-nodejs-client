@@ -185,7 +185,7 @@ DBDriver.connect = function(addr, auth){
     ;
 
   var options = {
-    hostname : addr[1],
+    hostname : addr[1] || 'localhost',
     port : addr[0],
     method : 'GET',
     auth : auth.cid + ':' + auth.passwd,
