@@ -205,6 +205,7 @@ DBDriver.connect = function(addr, auth){
   }
 
   connect();
+  return dbDriver;
 }
 
 DBDriver.prototype.listen2respawn = function listen2respawn(connect){
@@ -227,7 +228,6 @@ DBDriver.prototype.listen2respawn = function listen2respawn(connect){
     me.execCount > 0 && me._cancelPendings('dispatcher quit');
     setTimeout(connect, 1000);
   });
-  return dbDriver;
 };
 
 exports.DBDriver = DBDriver;
