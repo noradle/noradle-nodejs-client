@@ -182,6 +182,7 @@ DBDriver.prototype.execQueuedCB = function(){
 
 DBDriver.connect = function(addr, auth){
   var dbDriver = new DBDriver()
+    , repeatTrying = false
     ;
 
   var options = {
@@ -196,12 +197,22 @@ DBDriver.connect = function(addr, auth){
   };
 
   function connect(){
-    debug('try connect to dispatcher');
-    http.request(options).on('upgrade', function(res, socket, head){
-      head.length && socket.unshift(head);
-      dbDriver.bind(socket);
-      dbDriver.listen2respawn(connect);
-    });
+    repeatTrying || debug('try connect to dispatcher');
+    http.request(options)
+      .on('upgrade', function(res, socket, head){
+        debug('http upgrade request made!');
+        repeatTrying = false;
+        head.length && socket.unshift(head);
+        dbDriver.bind(socket);
+        dbDriver.listen2respawn(connect);
+      })
+      .on('error', function(err){
+        repeatTrying || debug('http connect error found! will try repeatly until connected %j', err);
+        dbDriver.execCount > 0 && dbDriver._cancelPendings('dispatcher quit');
+        setTimeout(connect, 1000);
+        repeatTrying = true;
+      })
+      .end();
   }
 
   connect();
