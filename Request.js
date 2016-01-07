@@ -105,6 +105,7 @@ Request.prototype.write = function(chunk){
  */
 Request.prototype.end = function(cb){
   var req = this, res, status, headers, session;
+  req.addListener('response', cb);
   this._sendHeaders();
   // mark zero-length frame for end of request
   writeFrame(this.stream, this.slotID, C.END_FRAME, 0, null);
@@ -117,7 +118,7 @@ Request.prototype.end = function(cb){
         status = parseInt(lines.shift());
         headers = split2nvs(lines);
         res = new Response(status, headers);
-        cb(res);
+        req.emit('response', res);
         break;
       case C.SESSION_FRAME:
         debug('response session, %s', body.toString('utf8'));
