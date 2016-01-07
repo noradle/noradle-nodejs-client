@@ -202,8 +202,8 @@ DBDriver.connect = function(addr, auth){
       .on('upgrade', function(res, socket, head){
         debug('http upgrade request made!');
         repeatTrying = false;
-        head.length && socket.unshift(head);
         dbDriver.bind(socket);
+        head.length && socket.unshift(head);
         dbDriver.listen2respawn(connect);
       })
       .on('error', function(err){
