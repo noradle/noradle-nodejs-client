@@ -1,6 +1,6 @@
 {
   "name": "noradle-nodejs-client",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "description": "noradle protocol client to access oracle plsql servlet",
   "main": "index.js",
   "scripts": {
