@@ -8,7 +8,6 @@ var frame = require('noradle-protocol').frame
   , debug = require('debug')('noradle:DBDriver')
   , Request = require('./Request.js').Request
   , C = require('noradle-protocol').constant
-  , http = require('http')
   ;
 
 
@@ -180,16 +179,27 @@ DBDriver.prototype.execQueuedCB = function(){
   }
 };
 
-DBDriver.connect = function(addr, auth){
+var http = require('http')
+  , https = require('https')
+  ;
+/**
+ * make a multiplexed connection to noradle-dispather
+ * @param addr [port, host]
+ * @param auth {cid:String, passwd:String}
+ * @param secure {Boolean:=false} if use https
+ * @returns {DBDriver}
+ */
+DBDriver.connect = function(addr, auth, secure){
   var dbDriver = new DBDriver()
     , repeatTrying = false
     ;
 
   var options = {
     hostname : addr[1] || 'localhost',
-    port : addr[0],
+    port : parseInt(addr[0]),
     method : 'GET',
     auth : auth.cid + ':' + auth.passwd,
+    rejectUnauthorized : false,
     headers : {
       'x-noradle-role' : 'client',
       upgrade : 'websocket'
@@ -197,8 +207,8 @@ DBDriver.connect = function(addr, auth){
   };
 
   function connect(){
-    repeatTrying || debug('try connect to dispatcher');
-    http.request(options)
+    repeatTrying || debug('try connect to dispatcher(secure=%s) %s', secure, JSON.stringify(options, null, 2));
+    (secure ? https : http).request(options)
       .on('upgrade', function(res, socket, head){
         debug('http upgrade request made!');
         repeatTrying = false;
