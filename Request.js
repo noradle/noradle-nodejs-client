@@ -15,7 +15,6 @@ function getNow(){
   }
 };
 
-
 var util = require("util")
   , events = require("events")
   , reqCnt = 0
@@ -26,7 +25,7 @@ var util = require("util")
 
 function split2nvs(lines){
   var nvs = {}, nv, setCookies = false;
-  for (var i = 0, len = lines.length; i < len; i++) {
+  for (var i = 0, len = lines.length - 2; i < len; i++) {
     if (setCookies) {
       setCookies.push(lines[i]);
     } else if (lines[i] === 'Set-Cookies: ') {
@@ -114,7 +113,6 @@ Request.prototype.end = function(cb){
       case C.HEAD_FRAME:
         var lines = body.toString('utf8').split('\r\n')
         debug('response head', lines);
-        lines.pop();
         status = parseInt(lines.shift());
         headers = split2nvs(lines);
         res = new Response(status, headers);
