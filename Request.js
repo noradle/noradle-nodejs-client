@@ -26,12 +26,12 @@ var util = require("util")
 function split2nvs(lines){
   var nvs = {}, nv, setCookies = false;
   for (var i = 0, len = lines.length - 2; i < len; i++) {
+    nv = lines[i].split(': ');
     if (setCookies) {
-      setCookies.push(lines[i]);
-    } else if (lines[i] === 'Set-Cookies: ') {
-      nvs['Set-Cookie'] = setCookies = [];
+      setCookies.push(nv[1]);
+    } else if (nv[0] === 'Set-Cookie') {
+      nvs['Set-Cookie'] = setCookies = [nv[1]];
     } else {
-      nv = lines[i].split(': ');
       nvs[nv[0]] = nv[1];
     }
   }
