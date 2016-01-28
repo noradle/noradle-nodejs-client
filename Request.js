@@ -113,7 +113,7 @@ Request.prototype.end = function(cb){
       case C.HEAD_FRAME:
         var lines = body.toString('utf8').split('\r\n')
         debug('response head', lines);
-        status = parseInt(lines.shift());
+        status = parseInt(lines.shift().split(' ')[1]);
         headers = split2nvs(lines);
         res = new Response(status, headers);
         req.emit('response', res);
