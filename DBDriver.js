@@ -202,6 +202,7 @@ DBDriver.connect = function(addr, auth, secure){
     rejectUnauthorized : false,
     headers : {
       'x-noradle-role' : 'client',
+      connection : 'upgrade',
       upgrade : 'websocket'
     }
   };
