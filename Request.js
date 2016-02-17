@@ -54,8 +54,13 @@ function Request(slotID, stream, env){
 util.inherits(Request, events.EventEmitter);
 
 Request.prototype.init = function(protocol, hprof){
-  this._buf[0] = protocol || 'BIOS';
-  this._buf[1] = hprof || '';
+  var idx = 0;
+  if (protocol) {
+    this._buf[idx++] = 'b$protocol\r\n' + protocol;
+  }
+  if (hprof) {
+    this._buf[idx++] = 'b$hprof\r\n' + hprof;
+  }
   return this;
 };
 
