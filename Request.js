@@ -40,7 +40,7 @@ function split2nvs(lines){
 
 function Request(slotID, stream, env){
   events.EventEmitter.call(this);
-  this._buf = ['', ''];
+  this._buf = [];
   this.headerSent = false;
   this.quitting = false;
   this.error = false;
@@ -54,12 +54,13 @@ function Request(slotID, stream, env){
 util.inherits(Request, events.EventEmitter);
 
 Request.prototype.init = function(protocol, hprof){
+  console.log('\n\n', protocol, hprof);
   var idx = 0;
   if (protocol) {
-    this._buf[idx++] = 'b$protocol\r\n' + protocol;
+    this._buf.push('b$protocol', protocol);
   }
   if (hprof) {
-    this._buf[idx++] = 'b$hprof\r\n' + hprof;
+    this._buf.push('b$hprof', +hprof);
   }
   return this;
 };
