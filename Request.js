@@ -65,7 +65,7 @@ Request.prototype.init = function(protocol, hprof){
   return this;
 };
 
-Request.prototype.addHeaders = function(obj, pre){
+Request.prototype.addHeaders = function(obj, pre, encode){
   var buf = this._buf
     , core = arguments.length >= 2
     ;
@@ -75,17 +75,20 @@ Request.prototype.addHeaders = function(obj, pre){
       var v = obj[n];
       if (v instanceof Array) {
         buf.push('*' + pre + n, v.length);
+        if(encode) {
+          v = v.map(function(v){ return encodeURIComponent(v); });
+        }
         Array.prototype.push.apply(buf, v);
       } else if (v !== undefined) {
-        buf.push(pre + n, v);
+        buf.push(pre + n, encode ? encodeURIComponent(v) : v);
       }
     }
   }
   return this;
 };
 
-Request.prototype.addHeader = function(name, value){
-  this._buf.push(name, value);
+Request.prototype.addHeader = function(name, value, encode){
+  this._buf.push(name, encode ? encodeURIComponent(value) : value );
   return this;
 };
 
