@@ -8,6 +8,7 @@ var frame = require('noradle-protocol').frame
   , debug = require('debug')('noradle:DBDriver')
   , Request = require('./Request.js').Request
   , C = require('noradle-protocol').constant
+  , urlParse = require('url').parse
   ;
 
 
@@ -193,6 +194,15 @@ DBDriver.connect = function(addr, auth, secure){
   var dbDriver = new DBDriver()
     , repeatTrying = false
     ;
+  if(arguments.length === 1) {
+    // like http://demo:demo@loalhost:1522/db/dbu
+    var connStr = arguments[0];
+    var u = urlParse(connStr);
+    var pair = (u.auth || ':').split(':');
+    addr = [u.port || '1522', u.hostname || 'localhost']
+    auth = {cid: pair[0], passwd: pair[1]}
+    secure = (u.protocol.slice(-1) === 's')
+  }
 
   var options = {
     hostname : addr[1] || 'localhost',
